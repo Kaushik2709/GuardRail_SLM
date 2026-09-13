@@ -1,0 +1,10 @@
+# .gitignore
+.venv/
+__pycache__/
+*.pyc
+data/
+checkpoints/
+*.log
+*.jsonl
+*.parquet
+.cache/

@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  gateway:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.gateway
+    container_name: guardrail_zero_gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - GUARDRAIL_GATEWAY_HOST=0.0.0.0
+      - GUARDRAIL_GATEWAY_PORT=8000
+      - GUARDRAIL_SLM_SERVING_URL=http://slm_serving:8001/v1/completions
+      - GUARDRAIL_UPSTREAM_LLM_URL=https://api.openai.com/v1/chat/completions
+    depends_on:
+      - slm_serving
+    restart: unless-stopped
+
+  slm_serving:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.serving
+    container_name: guardrail_zero_slm
+    ports:
+      - "8001:8001"
+    volumes:
+      - ../checkpoints:/checkpoints:ro
+    restart: unless-stopped

@@ -1,0 +1,19 @@
+# Dockerfile.serving: Intel OpenVINO vLLM Engine for GuardRail-Zero
+# Optimized for Intel 12th Gen Core i5, Integrated GPU, and 16GB RAM
+FROM vllm/vllm-openvino:latest
+
+WORKDIR /app
+
+EXPOSE 8001
+
+ENTRYPOINT [ \
+    "python3", "-m", "vllm.entrypoints.openai.api_server", \
+    "--model", "Qwen/Qwen2.5-0.5B-Instruct", \
+    "--enable-lora", \
+    "--lora-modules", "guardrail-zero=Kaushik2709/guardrail-zero-qwen-0.5b-lora", \
+    "--port", "8001", \
+    "--max-model-len", "512", \
+    "--max-num-seqs", "8", \
+    "--device", "openvino", \
+    "--disable-log-requests" \
+]
