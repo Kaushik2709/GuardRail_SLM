@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   gateway:
     build:
@@ -8,13 +6,17 @@ services:
     container_name: guardrail_zero_gateway
     ports:
       - "8000:8000"
+    env_file:
+      - path: ../.env
+        required: false
     environment:
       - GUARDRAIL_GATEWAY_HOST=0.0.0.0
       - GUARDRAIL_GATEWAY_PORT=8000
       - GUARDRAIL_SLM_SERVING_URL=http://slm_serving:8001/v1/completions
       - GUARDRAIL_UPSTREAM_LLM_URL=https://api.openai.com/v1/chat/completions
     depends_on:
-      - slm_serving
+      slm_serving:
+        condition: service_healthy
     restart: unless-stopped
 
   slm_serving:
@@ -24,6 +26,16 @@ services:
     container_name: guardrail_zero_slm
     ports:
       - "8001:8001"
-    volumes:
-      - ../checkpoints:/checkpoints:ro
+    env_file:
+      - path: ../.env
+        required: false
+    environment:
+      - GUARDRAIL_SLM_MODEL_NAME=${GUARDRAIL_SLM_MODEL_NAME:-Qwen/Qwen2.5-0.5B-Instruct}
+      - GUARDRAIL_SLM_LORA_NAME=${GUARDRAIL_SLM_LORA_NAME:-Kaushik2709/guardrail-zero-qwen-0.5b-lora}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request, json; res = json.loads(urllib.request.urlopen('http://localhost:8001/health').read().decode()); exit(0 if res.get('neural_network_loaded') else 1)"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
     restart: unless-stopped

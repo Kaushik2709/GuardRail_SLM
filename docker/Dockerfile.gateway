@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install python dependencies
 COPY pyproject.toml .
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir fastapi uvicorn[standard] pydantic pydantic-settings httpx python-multipart fastmcp
+    pip install --no-cache-dir fastapi uvicorn[standard] pydantic pydantic-settings httpx python-multipart fastmcp pyyaml
 
 # Copy application source code
 COPY app/ ./app/

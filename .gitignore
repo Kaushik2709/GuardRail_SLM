@@ -10,3 +10,7 @@ checkpoints/
 .cache/
 
 .agent/
+
+.env
+*.env
+.env.example

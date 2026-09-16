@@ -1,19 +1,37 @@
-# Dockerfile.serving: Intel OpenVINO vLLM Engine for GuardRail-Zero
-# Optimized for Intel 12th Gen Core i5, Integrated GPU, and 16GB RAM
-FROM vllm/vllm-openvino:latest
+# Dockerfile.serving: Real PyTorch & Transformers SLM Serving Engine for GuardRail-Zero
+FROM python:3.11-slim
 
 WORKDIR /app
 
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install PyTorch CPU and HuggingFace Transformers stack
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu && \
+    pip install --no-cache-dir transformers accelerate peft fastapi uvicorn[standard] pydantic huggingface_hub
+
+# Pre-download base model and fine-tuned LoRA adapter directly into Docker image
+# This ensures all weights stay strictly inside Docker and NEVER need to be downloaded to the host PC.
+ENV HF_HUB_ENABLE_HF_TRANSFER=0
+RUN python -c "\
+from transformers import AutoTokenizer, AutoModelForCausalLM; \
+from peft import PeftModel; \
+base_id = 'Qwen/Qwen2.5-0.5B-Instruct'; \
+lora_id = 'Kaushik2709/guardrail-zero-qwen-0.5b-lora'; \
+print(f'Downloading {base_id} tokenizer and model into Docker image...'); \
+AutoTokenizer.from_pretrained(base_id); \
+model = AutoModelForCausalLM.from_pretrained(base_id); \
+print(f'Downloading {lora_id} LoRA weights into Docker image...'); \
+PeftModel.from_pretrained(model, lora_id); \
+print('Model weights successfully baked into Docker image!'); \
+"
+
+# Copy SLM serving application
+COPY docker/slm_server.py .
+
 EXPOSE 8001
 
-ENTRYPOINT [ \
-    "python3", "-m", "vllm.entrypoints.openai.api_server", \
-    "--model", "Qwen/Qwen2.5-0.5B-Instruct", \
-    "--enable-lora", \
-    "--lora-modules", "guardrail-zero=Kaushik2709/guardrail-zero-qwen-0.5b-lora", \
-    "--port", "8001", \
-    "--max-model-len", "512", \
-    "--max-num-seqs", "8", \
-    "--device", "openvino", \
-    "--disable-log-requests" \
-]
+CMD ["uvicorn", "slm_server:app", "--host", "0.0.0.0", "--port", "8001"]
