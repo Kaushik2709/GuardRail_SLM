@@ -14,3 +14,5 @@ checkpoints/
 .env
 *.env
 .env.example
+.pytest_cache/
+.test-tmp*/

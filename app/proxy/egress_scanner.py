@@ -30,9 +30,9 @@ class EgressScanner:
             if token in chunk_text:
                 return False, "EGRESS_CANARY_LEAK_DETECTED"
 
-        # Check high-confidence secret keys in egress
-        res = self.heuristics.inspect(chunk_text)
-        if not res.is_safe and res.threat_type == "PII_LEAK":
-            return False, "EGRESS_SECRET_LEAK_DETECTED"
+        # Scan each secret signature directly: an earlier non-secret match must not hide it.
+        for name, pattern in self.heuristics.PATTERNS.items():
+            if self.heuristics._THREAT_CATEGORY[name] == "PII_LEAK" and pattern.search(chunk_text):
+                return False, "EGRESS_SECRET_LEAK_DETECTED"
 
         return True, None

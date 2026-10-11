@@ -17,7 +17,14 @@ import re
 import time
 from collections import Counter
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import List, Optional
+
+
+class Classification(str, Enum):
+    ALLOW = "ALLOW"
+    BLOCK = "BLOCK"
+    INDETERMINATE = "INDETERMINATE"
 
 
 @dataclass(slots=True)  # requires Python 3.10+; drop slots=True on older versions
@@ -28,6 +35,22 @@ class InspectionResult:
     tier: str = "TIER_0"
     latency_ms: float = 0.0
     details: dict = field(default_factory=dict)
+    classification: Optional[Classification] = None
+
+    def __post_init__(self):
+        if self.classification is None:
+            self.classification = Classification.ALLOW if self.is_safe else Classification.BLOCK
+        # Compatibility boolean never grants permission for an indeterminate result.
+        self.is_safe = self.classification == Classification.ALLOW
+
+    def permits(self, context: str = "proxy") -> bool:
+        from app.config import settings
+        if self.classification == Classification.INDETERMINATE:
+            policy = {"proxy": settings.PROXY_FAILURE_POLICY,
+                      "tool": settings.TOOL_FAILURE_POLICY,
+                      "prompt": settings.PROMPT_FAILURE_POLICY}[context]
+            return policy == "allow"
+        return self.classification == Classification.ALLOW
 
 
 class FastHeuristicsEngine:
@@ -138,7 +161,7 @@ class FastHeuristicsEngine:
                     threat_type="CANARY_LEAK",
                     confidence=1.0,
                     latency_ms=(time.perf_counter() - t0) * 1000,
-                    details={"matched_canary": canary_match.group(0)},
+                    details={"canary_detected": True},
                 )
 
         # 2. Combined regex signature scan — one pass instead of seven.
@@ -150,7 +173,7 @@ class FastHeuristicsEngine:
                 threat_type=self._THREAT_CATEGORY[name],
                 confidence=0.99,
                 latency_ms=(time.perf_counter() - t0) * 1000,
-                details={"rule": name, "snippet": match.group(0)[:60]},
+                details={"rule": name, "snippet": "[REDACTED]" if self._THREAT_CATEGORY[name] == "PII_LEAK" else match.group(0)[:60]},
             )
 
         # 3. High-entropy obfuscation check (Base64 / encrypted strings >= 40 chars).

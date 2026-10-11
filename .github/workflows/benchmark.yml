@@ -1,25 +1,38 @@
-name: Performance & Latency Benchmark
-
+name: Optional Model Evaluation
 on:
   workflow_dispatch:
-
+    inputs:
+      dataset:
+        description: Path to a provenance-reviewed dataset on the trusted runner
+        required: true
+        type: string
+      hardware:
+        description: CPU/GPU/RAM declaration
+        required: true
+        type: string
 jobs:
-  benchmark:
-    runs-on: ubuntu-latest
+  model-evaluation:
+    # Operator-managed runner with a ready fine-tuned model; never runs on PRs.
+    runs-on: [self-hosted, guardrail-model]
+    env:
+      DATASET: ${{ inputs.dataset }}
+      HARDWARE: ${{ inputs.hardware }}
+      GUARDRAIL_SLM_TIMEOUT_SECONDS: "120"
+      GUARDRAIL_RUN_MODEL_TESTS: "1"
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
-      - name: Install dependencies
+      - run: pip install -e ".[eval]"
+      - run: python -m pytest -m model -q
+      - name: Model-dependent security and performance evaluation
+        shell: bash
         run: |
-          python -m pip install --upgrade pip
-          pip install -e .
-
-      - name: Run Latency & Accuracy Benchmarks
-        run: |
-          python benchmarks/benchmark_latency.py
-          python benchmarks/benchmark_accuracy.py
+          mkdir -p benchmark-results
+          python benchmarks/benchmark_accuracy.py --dataset "$DATASET" --mode all --output benchmark-results/accuracy.json
+          python benchmarks/benchmark_latency.py --dataset "$DATASET" --mode all --hardware "$HARDWARE" --output benchmark-results/latency.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: model-benchmark-results
+          path: benchmark-results/

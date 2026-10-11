@@ -1,0 +1,132 @@
+{
+  "dataset_sha256": "9946b312a000a920e70b048c9dfe0349d67d39d52e3800788d95ea7758c22ecf",
+  "training_sha256": "621e259bfef8019f0613aa3630f5b3615a17ecc72fc22a28985036622dcf2fa3",
+  "scope": "Dataset diagnostic; held-out validity requires training lineage verification",
+  "model_health": null,
+  "results": {
+    "tier0": {
+      "overall": {
+        "n": 3441,
+        "tp": 469,
+        "fp": 0,
+        "tn": 1454,
+        "fn": 1518,
+        "confusion_matrix": {
+          "actual_threat": {
+            "blocked": 469,
+            "allowed": 1518
+          },
+          "actual_benign": {
+            "blocked": 0,
+            "allowed": 1454
+          }
+        },
+        "accuracy": 0.5588491717523976,
+        "precision": 1.0,
+        "recall": 0.23603422244589833,
+        "f1": 0.38192182410423453,
+        "false_positive_rate": 0.0,
+        "false_negative_rate": 0.7639657775541017,
+        "indeterminate": 0
+      },
+      "by_category": {
+        "[INJECTION_DIRECT]": {
+          "n": 337,
+          "tp": 3,
+          "fp": 0,
+          "tn": 0,
+          "fn": 334,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 3,
+              "allowed": 334
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 0
+            }
+          },
+          "accuracy": 0.008902077151335312,
+          "precision": 1.0,
+          "recall": 0.008902077151335312,
+          "f1": 0.01764705882352941,
+          "false_positive_rate": null,
+          "false_negative_rate": 0.9910979228486647,
+          "indeterminate": 0
+        },
+        "[MALICIOUS_TOOL_CALL]": {
+          "n": 1650,
+          "tp": 466,
+          "fp": 0,
+          "tn": 0,
+          "fn": 1184,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 466,
+              "allowed": 1184
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 0
+            }
+          },
+          "accuracy": 0.2824242424242424,
+          "precision": 1.0,
+          "recall": 0.2824242424242424,
+          "f1": 0.44045368620037806,
+          "false_positive_rate": null,
+          "false_negative_rate": 0.7175757575757575,
+          "indeterminate": 0
+        },
+        "[SAFE]": {
+          "n": 1454,
+          "tp": 0,
+          "fp": 0,
+          "tn": 1454,
+          "fn": 0,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 0,
+              "allowed": 0
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 1454
+            }
+          },
+          "accuracy": 1.0,
+          "precision": null,
+          "recall": null,
+          "f1": null,
+          "false_positive_rate": 0.0,
+          "false_negative_rate": null,
+          "indeterminate": 0
+        }
+      },
+      "unseen_source_families": {
+        "n": 1987,
+        "tp": 469,
+        "fp": 0,
+        "tn": 0,
+        "fn": 1518,
+        "confusion_matrix": {
+          "actual_threat": {
+            "blocked": 469,
+            "allowed": 1518
+          },
+          "actual_benign": {
+            "blocked": 0,
+            "allowed": 0
+          }
+        },
+        "accuracy": 0.23603422244589833,
+        "precision": 1.0,
+        "recall": 0.23603422244589833,
+        "f1": 0.38192182410423453,
+        "false_positive_rate": null,
+        "false_negative_rate": 0.7639657775541017,
+        "indeterminate": 0
+      }
+    }
+  }
+}

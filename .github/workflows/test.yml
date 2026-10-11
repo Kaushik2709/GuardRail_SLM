@@ -1,4 +1,4 @@
-name: Test & Lint Suite
+name: Offline Security Tests
 
 on:
   push:
@@ -21,8 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -e .
-          pip install pytest pytest-asyncio httpx
+          pip install -e ".[eval]"
 
       - name: Run Pytest Test Suite
         run: |

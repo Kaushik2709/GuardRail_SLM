@@ -1,3 +1,5 @@
+> Historical design/integration notes. Performance, accuracy, AWQ/vLLM, tracing and resume claims below are targets or unverified statements. Use [README](README.md) and [validation report](SECURITY_VALIDATION_REPORT.md) for current behavior. Enforce tool decisions with `result.permits("tool")`; classifier failures default to denial.
+
 # 🛡️ GuardRail-Zero: Sub-15ms Self-Hosted SLM Firewall & MCP Security Gateway
 ## Comprehensive Technical Architecture, System Design & Implementation Blueprint
 
@@ -528,11 +530,9 @@ To satisfy top-tier AI engineering recruiters, the project will feature an empir
 
 ## 11. Resume Impact & Technical Talking Points
 
-### 11.1 Bullet Points for Your Resume
-- *Architected **GuardRail-Zero**, an open-source, sub-15ms AI security firewall and **Model Context Protocol (MCP)** gateway designed to defend autonomous agents against indirect prompt injections and tool poisoning.*
-- *Fine-tuned a 0.5B SLM (**Qwen2.5-0.5B**) using **QLoRA (Unsloth)** across 45k curated adversarial prompts, achieving **96.5% accuracy** on JailbreakBench and cutting false positives on benign code to **<1.8%**.*
-- *Optimized model serving with **vLLM (AWQ 4-bit quantization, CUDA Graphs)**, reducing memory footprint to **1.15GB VRAM** and delivering **sub-15ms p95 latency**—a 94% latency reduction compared to cloud moderation APIs.*
-- *Engineered an **OpenAI-compatible reverse proxy** and native MCP server with **OpenTelemetry tracing**, filtering in-flight agent tool parameters and preventing malicious SQL/shell code execution.*
+### 11.1 Evidence-based resume wording
+
+Use the measured-scope bullets in [SECURITY_VALIDATION_REPORT.md](SECURITY_VALIDATION_REPORT.md). Historical latency, memory, accuracy and tracing claims are not supported by the current implementation.
 
 ### 11.2 What Recruiters and Hiring Managers Will Ask You in Interviews
 

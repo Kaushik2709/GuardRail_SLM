@@ -1,7 +1,7 @@
 # scripts/build_scaled_dataset.py
 """
 GuardRail-Zero 30,000 Scaled Dataset Ingestion & Preprocessing Pipeline
-Exact 30,000 balanced samples across 5 core security threat categories:
+Target up to 30,000 samples across 5 core security threat categories:
 1. SAFE (Benign instructions, coding, SQL queries, multi-turn dialogue) - Target: 14,500
 2. INJECTION_DIRECT (Jailbreaks, DAN, prompt overrides, roleplay hijacking) - Target: 3,000
 3. INJECTION_INDIRECT (Poisoned RAG chunks, hidden instructions in web content/docs) - Target: 4,000
@@ -430,7 +430,7 @@ def collect_benign_corpus(target_count=14500):
 # =====================================================================
 def main():
     print("================================================================")
-    print("   GuardRail-Zero EXACT 30,000 Dataset Assembly Pipeline        ")
+    print("   GuardRail-Zero Dataset Assembly Pipeline (counts depend on sources)        ")
     print("================================================================")
 
     direct = collect_direct_injections(target_count=3000)
@@ -451,37 +451,24 @@ def main():
 
     df = pd.DataFrame(all_data)
 
-    print("\n================ FINAL 30,000 DATASET DISTRIBUTION ================")
+    print("\n================ ACTUAL DATASET DISTRIBUTION ================")
     print(df["category"].value_counts())
     print(f"TOTAL DATASET COUNT: {len(df)}")
     print("====================================================================")
 
-    # 85% Train (25,500), 15% Test (4,500) Split
-    split_idx = int(len(df) * 0.85)
-    train_df = df.iloc[:split_idx]
-    test_df = df.iloc[split_idx:]
-
-    train_path = PROCESSED_DIR / "guardrail_train.jsonl"
-    test_path = PROCESSED_DIR / "guardrail_test.jsonl"
-
-    train_df.to_json(train_path, orient="records", lines=True, force_ascii=False)
-    test_df.to_json(test_path, orient="records", lines=True, force_ascii=False)
-
-    summary = {
-        "total_samples": len(df),
-        "train_samples": len(train_df),
-        "test_samples": len(test_df),
-        "categories": df["category"].value_counts().to_dict(),
-        "is_safe_counts": df["is_safe"].value_counts().to_dict()
-    }
-
-    summary_path = PROCESSED_DIR / "dataset_summary.json"
-    with open(summary_path, "w", encoding="utf-8") as f:
+    # Emit one corpus; split source families before training with prepare_evaluation.py.
+    # Never overwrite legacy train/test artifacts with another random row split.
+    df["label"] = df["category"].map(lambda category: "[" + {
+        "TOOL_POISONING": "MALICIOUS_TOOL_CALL"
+    }.get(category, category) + "]")
+    corpus_path = PROCESSED_DIR / "guardrail_corpus.jsonl"
+    df.to_json(corpus_path, orient="records", lines=True, force_ascii=False)
+    summary = {"total_samples": len(df), "categories": df["category"].value_counts().to_dict(),
+               "split_method": "Unsplit corpus; run scripts/prepare_evaluation.py",
+               "provenance_limit": "Source names retained; original downloads lack pinned revisions and license snapshots"}
+    with open(PROCESSED_DIR / "corpus_summary.json", "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2)
-
-    print(f"\n[SUCCESS] Train split written to: {train_path} ({len(train_df)} samples)")
-    print(f"[SUCCESS] Test split written to:  {test_path} ({len(test_df)} samples)")
-    print(f"[SUCCESS] Summary written to:     {summary_path}")
+    print(f"Corpus written to {corpus_path}; source-grouped splitting is required.")
 
 if __name__ == "__main__":
     main()

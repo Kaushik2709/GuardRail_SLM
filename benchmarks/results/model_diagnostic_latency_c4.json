@@ -1,0 +1,62 @@
+{
+  "hardware": "Intel Core i5-12400; 16 GiB RAM; Windows 11 Docker Linux CPU; float32 unmerged LoRA; Intel UHD 730 unused",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.3",
+  "cpu": "Intel64 Family 6 Model 151 Stepping 5, GenuineIntel",
+  "logical_cpus": 12,
+  "model_health": {
+    "status": "healthy",
+    "service": "guardrail-zero-slm",
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "lora_adapter": "Kaushik2709/guardrail-zero-qwen-0.5b-lora",
+    "neural_network_loaded": true,
+    "device": "cpu",
+    "dtype": "float32",
+    "quantization": null,
+    "batch_size": 1,
+    "error": null
+  },
+  "dataset_sha256": "42678764e83c69339b482955a2a70b875217a19f0ffbbbef83db3e42024ecbf2",
+  "requests": 40,
+  "concurrency": 4,
+  "batch_size": 1,
+  "warmup": 5,
+  "request_utf8_bytes": {
+    "min": 50,
+    "max": 994
+  },
+  "generation": {
+    "max_tokens": 32,
+    "temperature": 0.0
+  },
+  "timing": "Per-request wall time after concurrency admission; includes HTTP/client overhead for SLM; excludes audit/upstream",
+  "results": {
+    "tier0": {
+      "p50_ms": 0.07105001714080572,
+      "p95_ms": 0.17952502530533818,
+      "p99_ms": 0.21992999361827967,
+      "requests_per_second": 12267.304664669193,
+      "tiers": {
+        "TIER_0": 40
+      }
+    },
+    "tier1": {
+      "p50_ms": 2464.5877500006463,
+      "p95_ms": 3240.5371649685544,
+      "p99_ms": 3404.7742879990255,
+      "requests_per_second": 1.5252503013938703,
+      "tiers": {
+        "TIER_1_SLM": 40
+      }
+    },
+    "combined": {
+      "p50_ms": 2482.3111000005156,
+      "p95_ms": 3163.9911899896106,
+      "p99_ms": 3307.1070090058492,
+      "requests_per_second": 1.5481550972438365,
+      "tiers": {
+        "TIER_1_SLM": 40
+      }
+    }
+  }
+}

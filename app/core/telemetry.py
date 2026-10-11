@@ -1,5 +1,5 @@
 """
-Telemetry, metrics, and tamper-evident audit logging for GuardRail-Zero.
+Telemetry, metrics, and local audit logging for GuardRail-Zero.
 Outputs structured JSON records for security event auditing.
 """
 
@@ -30,12 +30,12 @@ class SecurityAuditLogger:
         inspection: InspectionResult,
         extra_metadata: Optional[dict] = None
     ):
-        """Records an audit event asynchronously / non-blocking."""
+        """Records an audit event synchronously."""
         event = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "endpoint": endpoint,
             "client_ip": client_ip or "unknown",
-            "verdict": "SAFE" if inspection.is_safe else "BLOCKED",
+            "verdict": inspection.classification.value,
             "threat_type": inspection.threat_type,
             "confidence": inspection.confidence,
             "inspection_tier": inspection.tier,

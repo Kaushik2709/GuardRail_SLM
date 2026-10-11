@@ -1,0 +1,33 @@
+{
+  "hardware": "Intel Core i5-12400; Windows 11; CPU only; GPU unused",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.3",
+  "cpu": "Intel64 Family 6 Model 151 Stepping 5, GenuineIntel",
+  "logical_cpus": 12,
+  "model_health": null,
+  "dataset_sha256": "85dd90a6ad507b8bad031d9c8c4618ed51397e19fd815a42cf995e9a962f087e",
+  "requests": 4500,
+  "concurrency": 1,
+  "batch_size": 1,
+  "warmup": 100,
+  "request_utf8_bytes": {
+    "min": 11,
+    "max": 17415
+  },
+  "generation": {
+    "max_tokens": 32,
+    "temperature": 0.0
+  },
+  "timing": "Per-request wall time after concurrency admission; includes HTTP/client overhead for SLM; excludes audit/upstream",
+  "results": {
+    "tier0": {
+      "p50_ms": 0.029499991796910763,
+      "p95_ms": 0.37195003533270227,
+      "p99_ms": 1.2119129730854186,
+      "requests_per_second": 9836.798764849213,
+      "tiers": {
+        "TIER_0": 4500
+      }
+    }
+  }
+}

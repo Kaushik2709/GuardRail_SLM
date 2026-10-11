@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "guardrail-zero"
 version = "0.1.0"
-description = "Sub-15ms Self-Hosted SLM Firewall & MCP Security Gateway"
+description = "Self-Hosted SLM Firewall & MCP Security Gateway"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -41,3 +41,5 @@ include = ["app*"]
 testpaths = ["tests"]
 pythonpath = ["."]
 
+
+markers = ["model: optional integration requiring a loaded fine-tuned classifier"]

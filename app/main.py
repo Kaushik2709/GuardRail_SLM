@@ -12,7 +12,7 @@ from app.mcp.server import mcp_app
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
-    description="Sub-15ms Self-Hosted SLM Firewall & MCP Security Gateway for Autonomous AI Agents",
+    description="Self-Hosted SLM Firewall & MCP Security Gateway for Autonomous AI Agents",
     lifespan=mcp_app.lifespan
 )
 

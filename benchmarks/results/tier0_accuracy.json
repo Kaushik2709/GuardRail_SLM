@@ -1,0 +1,180 @@
+{
+  "dataset_sha256": "85dd90a6ad507b8bad031d9c8c4618ed51397e19fd815a42cf995e9a962f087e",
+  "training_sha256": "586b4fe7057e12dc14323e8381c4b770b5c2b844284a16ce62cc3562aaeda71e",
+  "scope": "Dataset diagnostic; held-out validity requires training lineage verification",
+  "model_health": null,
+  "results": {
+    "tier0": {
+      "overall": {
+        "n": 4500,
+        "tp": 229,
+        "fp": 0,
+        "tn": 2170,
+        "fn": 2101,
+        "confusion_matrix": {
+          "actual_threat": {
+            "blocked": 229,
+            "allowed": 2101
+          },
+          "actual_benign": {
+            "blocked": 0,
+            "allowed": 2170
+          }
+        },
+        "accuracy": 0.5331111111111111,
+        "precision": 1.0,
+        "recall": 0.0982832618025751,
+        "f1": 0.17897616256350138,
+        "false_positive_rate": 0.0,
+        "false_negative_rate": 0.9017167381974249,
+        "indeterminate": 0
+      },
+      "by_category": {
+        "[INJECTION_DIRECT]": {
+          "n": 466,
+          "tp": 11,
+          "fp": 0,
+          "tn": 0,
+          "fn": 455,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 11,
+              "allowed": 455
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 0
+            }
+          },
+          "accuracy": 0.023605150214592276,
+          "precision": 1.0,
+          "recall": 0.023605150214592276,
+          "f1": 0.04612159329140461,
+          "false_positive_rate": null,
+          "false_negative_rate": 0.9763948497854077,
+          "indeterminate": 0
+        },
+        "[INJECTION_INDIRECT]": {
+          "n": 627,
+          "tp": 25,
+          "fp": 0,
+          "tn": 0,
+          "fn": 602,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 25,
+              "allowed": 602
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 0
+            }
+          },
+          "accuracy": 0.03987240829346093,
+          "precision": 1.0,
+          "recall": 0.03987240829346093,
+          "f1": 0.07668711656441718,
+          "false_positive_rate": null,
+          "false_negative_rate": 0.960127591706539,
+          "indeterminate": 0
+        },
+        "[MALICIOUS_TOOL_CALL]": {
+          "n": 579,
+          "tp": 193,
+          "fp": 0,
+          "tn": 0,
+          "fn": 386,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 193,
+              "allowed": 386
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 0
+            }
+          },
+          "accuracy": 0.3333333333333333,
+          "precision": 1.0,
+          "recall": 0.3333333333333333,
+          "f1": 0.5,
+          "false_positive_rate": null,
+          "false_negative_rate": 0.6666666666666666,
+          "indeterminate": 0
+        },
+        "[PII_LEAK]": {
+          "n": 658,
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 658,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 0,
+              "allowed": 658
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 0
+            }
+          },
+          "accuracy": 0.0,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "false_positive_rate": null,
+          "false_negative_rate": 1.0,
+          "indeterminate": 0
+        },
+        "[SAFE]": {
+          "n": 2170,
+          "tp": 0,
+          "fp": 0,
+          "tn": 2170,
+          "fn": 0,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 0,
+              "allowed": 0
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 2170
+            }
+          },
+          "accuracy": 1.0,
+          "precision": null,
+          "recall": null,
+          "f1": null,
+          "false_positive_rate": 0.0,
+          "false_negative_rate": null,
+          "indeterminate": 0
+        }
+      },
+      "unseen_source_families": {
+        "n": 0,
+        "tp": 0,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0,
+        "confusion_matrix": {
+          "actual_threat": {
+            "blocked": 0,
+            "allowed": 0
+          },
+          "actual_benign": {
+            "blocked": 0,
+            "allowed": 0
+          }
+        },
+        "accuracy": null,
+        "precision": null,
+        "recall": null,
+        "f1": null,
+        "false_positive_rate": null,
+        "false_negative_rate": null,
+        "indeterminate": 0
+      }
+    }
+  }
+}

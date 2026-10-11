@@ -1,0 +1,99 @@
+{
+  "files": {
+    "data\\evaluation_v1\\train.jsonl": {
+      "rows": 24367,
+      "sha256": "621e259bfef8019f0613aa3630f5b3615a17ecc72fc22a28985036622dcf2fa3",
+      "normalized_duplicate_rows": 0,
+      "categories": {
+        "[SAFE]": 11584,
+        "[PII_LEAK]": 4500,
+        "[INJECTION_INDIRECT]": 4000,
+        "[MALICIOUS_TOOL_CALL]": 1650,
+        "[INJECTION_DIRECT]": 2633
+      },
+      "source_families": {
+        "yahma/alpaca-cleaned": 11584,
+        "ai4privacy/pii-masking-300k": 4500,
+        "synthetic/rag": 4000,
+        "synthetic/bash_tool_poisoning": 1650,
+        "TrustAIRLab/jailbreak_2023_12_25": 2223,
+        "walledai/JailbreakBench": 188,
+        "TrustAIRLab/jailbreak_2023_05_07": 150,
+        "rubend18/ChatGPT-Jailbreak-Prompts": 72
+      }
+    },
+    "data\\evaluation_v1\\validation.jsonl": {
+      "rows": 2162,
+      "sha256": "a66d3030b05079ef182fdaf67ac047e4d3d326ed227b40868aedc0cd4f6a4f5b",
+      "normalized_duplicate_rows": 0,
+      "categories": {
+        "[MALICIOUS_TOOL_CALL]": 700,
+        "[SAFE]": 1462
+      },
+      "source_families": {
+        "synthetic/python_tool_poisoning": 700,
+        "yahma/alpaca-cleaned": 1462
+      }
+    },
+    "data\\evaluation_v1\\test.jsonl": {
+      "rows": 3441,
+      "sha256": "9946b312a000a920e70b048c9dfe0349d67d39d52e3800788d95ea7758c22ecf",
+      "normalized_duplicate_rows": 0,
+      "categories": {
+        "[SAFE]": 1454,
+        "[MALICIOUS_TOOL_CALL]": 1650,
+        "[INJECTION_DIRECT]": 337
+      },
+      "source_families": {
+        "yahma/alpaca-cleaned": 1454,
+        "synthetic/sql_tool_poisoning": 1650,
+        "deepset/prompt-injections": 337
+      }
+    }
+  },
+  "overlaps": [
+    {
+      "files": [
+        "data\\evaluation_v1\\train.jsonl",
+        "data\\evaluation_v1\\validation.jsonl"
+      ],
+      "normalized_texts": 0,
+      "shared_source_families": [
+        "yahma/alpaca-cleaned"
+      ]
+    },
+    {
+      "files": [
+        "data\\evaluation_v1\\train.jsonl",
+        "data\\evaluation_v1\\test.jsonl"
+      ],
+      "normalized_texts": 0,
+      "shared_source_families": [
+        "yahma/alpaca-cleaned"
+      ]
+    },
+    {
+      "files": [
+        "data\\evaluation_v1\\validation.jsonl",
+        "data\\evaluation_v1\\test.jsonl"
+      ],
+      "normalized_texts": 0,
+      "shared_source_families": [
+        "yahma/alpaca-cleaned"
+      ]
+    }
+  ],
+  "inputs": {
+    "data/processed/guardrail_train.jsonl": "586b4fe7057e12dc14323e8381c4b770b5c2b844284a16ce62cc3562aaeda71e",
+    "data/processed/guardrail_test.jsonl": "85dd90a6ad507b8bad031d9c8c4618ed51397e19fd815a42cf995e9a962f087e"
+  },
+  "method": "Attack source-family holdout before future training; normalized deduplication; benign normalized-text SHA256 buckets 80/10/10; input order retained",
+  "limitations": "Not held out from existing adapters. Source grouping cannot prove absence of semantic/template leakage across sources.",
+  "test_families": [
+    "synthetic/sql_tool_poisoning",
+    "deepset/prompt-injections"
+  ],
+  "validation_families": [
+    "synthetic/python_tool_poisoning"
+  ]
+}

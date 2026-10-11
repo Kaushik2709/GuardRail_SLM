@@ -278,32 +278,19 @@ def main():
     print(df["category"].value_counts())
     print("======================================================")
 
-    # 85% Train, 15% Test
-    split_idx = int(len(df) * 0.85)
-    train_df = df.iloc[:split_idx]
-    test_df = df.iloc[split_idx:]
-
-    train_path = PROCESSED_DIR / "guardrail_train.jsonl"
-    test_path = PROCESSED_DIR / "guardrail_test.jsonl"
-
-    train_df.to_json(train_path, orient="records", lines=True)
-    test_df.to_json(test_path, orient="records", lines=True)
-
-    summary = {
-        "total_samples": len(df),
-        "train_samples": len(train_df),
-        "test_samples": len(test_df),
-        "categories": df["category"].value_counts().to_dict(),
-        "is_safe_counts": df["is_safe"].value_counts().to_dict()
-    }
-
-    summary_path = PROCESSED_DIR / "dataset_summary.json"
-    with open(summary_path, "w", encoding="utf-8") as f:
+    # Emit one corpus; split source families before training with prepare_evaluation.py.
+    # Never overwrite legacy train/test artifacts with another random row split.
+    df["label"] = df["category"].map(lambda category: "[" + {
+        "TOOL_POISONING": "MALICIOUS_TOOL_CALL"
+    }.get(category, category) + "]")
+    corpus_path = PROCESSED_DIR / "guardrail_corpus.jsonl"
+    df.to_json(corpus_path, orient="records", lines=True, force_ascii=False)
+    summary = {"total_samples": len(df), "categories": df["category"].value_counts().to_dict(),
+               "split_method": "Unsplit corpus; run scripts/prepare_evaluation.py",
+               "provenance_limit": "Source names retained; original downloads lack pinned revisions and license snapshots"}
+    with open(PROCESSED_DIR / "corpus_summary.json", "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2)
-
-    print(f"\n[SUCCESS] Train split written to: {train_path} ({len(train_df)} samples)")
-    print(f"[SUCCESS] Test split written to:  {test_path} ({len(test_df)} samples)")
-    print(f"[SUCCESS] Summary written to:     {summary_path}")
+    print(f"Corpus written to {corpus_path}; source-grouped splitting is required.")
 
 if __name__ == "__main__":
     main()

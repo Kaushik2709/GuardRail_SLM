@@ -10,7 +10,7 @@ import uuid
 import logging
 import threading
 from typing import List, Optional, Union
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 logging.basicConfig(level=logging.INFO)
@@ -96,7 +96,7 @@ def load_slm_model():
                     lora_adapter_name = lora_id
                     logger.info(f"Successfully loaded fine-tuned security LoRA adapter from {lora_id}!")
                 except Exception as e:
-                    logger.warning(f"Could not load LoRA from {lora_id}: {e}")
+                    raise RuntimeError("Required LoRA adapter could not be loaded") from e
 
             model.eval()
             model_loaded = True
@@ -123,6 +123,8 @@ async def health():
         "model": os.getenv("GUARDRAIL_SLM_MODEL_NAME", "Qwen/Qwen2.5-0.5B-Instruct"),
         "lora_adapter": lora_adapter_name,
         "neural_network_loaded": model_loaded,
+        "device": "cpu", "dtype": "float32", "quantization": None,
+        "batch_size": 1,
         "error": loading_error
     }
 
@@ -133,7 +135,9 @@ async def create_completion(req: CompletionRequest):
     prompt_str = req.prompt if isinstance(req.prompt, str) else " ".join(req.prompt)
 
     if not model_loaded:
-        load_slm_model()
+        raise HTTPException(status_code=503, detail="Classifier model is not ready")
+    if req.model != os.getenv("GUARDRAIL_SLM_MODEL_NAME", "Qwen/Qwen2.5-0.5B-Instruct"):
+        raise HTTPException(status_code=400, detail="Requested model is not loaded")
 
     import torch
     inputs = tokenizer(prompt_str, return_tensors="pt")
@@ -153,14 +157,13 @@ async def create_completion(req: CompletionRequest):
     new_tokens = outputs[0][input_length:]
     generated_text = tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
 
-    # Ensure generated text is enclosed in brackets, e.g. [SAFE] or [INJECTION_DIRECT]
-    if not generated_text:
-        generated_text = "[SAFE]"
-    else:
-        if not generated_text.startswith("["):
-            generated_text = f"[{generated_text}"
-        if not generated_text.endswith("]"):
-            generated_text = f"{generated_text}]"
+    # Match OpenAI completion stop semantics; never synthesize a safe label.
+    stopped = bool(len(new_tokens) and new_tokens[-1].item() == tokenizer.eos_token_id)
+    for stop in req.stop or []:
+        if stop and stop in generated_text:
+            generated_text = generated_text.split(stop, 1)[0]
+            stopped = True
+    finish_reason = "stop" if stopped or len(new_tokens) < (req.max_tokens or 6) else "length"
 
     prompt_tokens = input_length
     completion_tokens = len(new_tokens)
@@ -173,7 +176,7 @@ async def create_completion(req: CompletionRequest):
             Choice(
                 text=generated_text,
                 index=0,
-                finish_reason="stop"
+                finish_reason=finish_reason
             )
         ],
         usage=Usage(

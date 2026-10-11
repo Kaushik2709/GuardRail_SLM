@@ -21,14 +21,16 @@ logger = logging.getLogger("guardrail.mcp.server")
 mcp = FastMCP(
     name="GuardRail-Zero",
     instructions=(
-        "Sub-15ms Self-Hosted SLM Firewall & MCP Security Gateway for Autonomous AI Agents. "
+        "Self-Hosted SLM Firewall & MCP Security Gateway for Autonomous AI Agents. "
         "Provides memory inspection, pre-flight tool verification, and PII/credential redaction."
     ),
     version=settings.APP_VERSION,
 )
 
 # Attach Zero-Trust Security Middleware
-interceptor = MCPInterceptor(sanitize_outputs=True)
+# This server owns only these registered security functions. Execution servers
+# must use the default empty exemption set; names alone are not trusted.
+interceptor = MCPInterceptor(sanitize_outputs=True, exempt_tools=MCPInterceptor.EXEMPT_TOOLS)
 mcp.add_middleware(interceptor)
 
 # Register Core Security Tools

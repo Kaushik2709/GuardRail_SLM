@@ -1,0 +1,17 @@
+{
+  "date_local": "2026-10-11",
+  "timezone": "Asia/Calcutta",
+  "adapter": "Kaushik2709/guardrail-zero-qwen-0.5b-lora",
+  "adapter_snapshot": "a6b604a9a8495f95ef276a71fb94b945d1d97a84",
+  "adapter_sha256": "46cf18df75339290014d3aebefc5ab5c1d59a736f8ee9d6bbe1d6794ab09a036",
+  "torch": "2.14.0+cpu",
+  "transformers": "5.17.0",
+  "peft": "0.21.0",
+  "torch_threads": 6,
+  "host_cpu": "Intel Core i5-12400",
+  "host_logical_cpus": 12,
+  "host_usable_physical_memory_bytes": 16936767488,
+  "gpu": "Intel UHD Graphics 730 (unused)",
+  "serving": "Existing local docker-slm_serving image with corrected server bind-mounted; CPU float32, unmerged LoRA; cached weights, HF offline",
+  "training_lineage": "Unknown; no training-run manifest links this adapter to the local data"
+}

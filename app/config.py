@@ -3,7 +3,7 @@ Configuration settings for GuardRail-Zero Gateway & Firewall.
 Uses Pydantic BaseSettings for dynamic environment variable management.
 """
 
-from typing import List, Optional
+from typing import List, Optional, Literal
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -27,6 +27,11 @@ class Settings(BaseSettings):
     SLM_MODEL_NAME: str = "Qwen/Qwen2.5-0.5B-Instruct"
     SLM_TIMEOUT_SECONDS: float = 0.5  # 500ms max circuit-breaker
     
+    # Indeterminate classifications remain distinct from enforcement decisions.
+    PROXY_FAILURE_POLICY: Literal["allow", "block"] = "block"
+    TOOL_FAILURE_POLICY: Literal["allow", "block"] = "block"
+    PROMPT_FAILURE_POLICY: Literal["allow", "block"] = "block"
+
     # Tier-0 Heuristic Thresholds
     ENTROPY_THRESHOLD: float = 4.85
     ENABLE_TIER0_HEURISTICS: bool = True

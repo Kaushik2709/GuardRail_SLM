@@ -14,7 +14,7 @@ from app.config import settings
 class SecurityCascadeEngine:
     """
     Coordinates multi-tier security inspection pipeline:
-    Tier-0 (<1.5ms) -> Tier-1 SLM (<12ms) -> Verified Safe / Blocked.
+    Tier-0 heuristics -> Tier-1 generative labels -> ALLOW / BLOCK / INDETERMINATE.
     """
 
     def __init__(
@@ -43,7 +43,12 @@ class SecurityCascadeEngine:
 
         # Tier-1 SLM Engine
         if settings.ENABLE_TIER1_SLM:
-            res1 = await self.slm.classify(text)
+            try:
+                res1 = await self.slm.classify(text)
+                if not isinstance(res1, InspectionResult):
+                    return self.slm.indeterminate(total_t0, "invalid_classifier_result")
+            except Exception as exc:
+                return SLMClassificationEngine.indeterminate(total_t0, type(exc).__name__)
             res1.latency_ms = (time.perf_counter() - total_t0) * 1000
             return res1
 

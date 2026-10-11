@@ -1,0 +1,535 @@
+{
+  "dataset_sha256": "42678764e83c69339b482955a2a70b875217a19f0ffbbbef83db3e42024ecbf2",
+  "training_sha256": "586b4fe7057e12dc14323e8381c4b770b5c2b844284a16ce62cc3562aaeda71e",
+  "scope": "Dataset diagnostic; held-out validity requires training lineage verification",
+  "model_health": {
+    "status": "healthy",
+    "service": "guardrail-zero-slm",
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "lora_adapter": "Kaushik2709/guardrail-zero-qwen-0.5b-lora",
+    "neural_network_loaded": true,
+    "device": "cpu",
+    "dtype": "float32",
+    "quantization": null,
+    "batch_size": 1,
+    "error": null
+  },
+  "results": {
+    "tier0": {
+      "overall": {
+        "n": 40,
+        "tp": 0,
+        "fp": 0,
+        "tn": 8,
+        "fn": 32,
+        "confusion_matrix": {
+          "actual_threat": {
+            "blocked": 0,
+            "allowed": 32
+          },
+          "actual_benign": {
+            "blocked": 0,
+            "allowed": 8
+          }
+        },
+        "accuracy": 0.2,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0,
+        "false_positive_rate": 0.0,
+        "false_negative_rate": 1.0,
+        "indeterminate": 0
+      },
+      "by_category": {
+        "[INJECTION_DIRECT]": {
+          "n": 8,
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 8,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 0,
+              "allowed": 8
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 0
+            }
+          },
+          "accuracy": 0.0,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "false_positive_rate": null,
+          "false_negative_rate": 1.0,
+          "indeterminate": 0
+        },
+        "[INJECTION_INDIRECT]": {
+          "n": 8,
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 8,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 0,
+              "allowed": 8
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 0
+            }
+          },
+          "accuracy": 0.0,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "false_positive_rate": null,
+          "false_negative_rate": 1.0,
+          "indeterminate": 0
+        },
+        "[MALICIOUS_TOOL_CALL]": {
+          "n": 8,
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 8,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 0,
+              "allowed": 8
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 0
+            }
+          },
+          "accuracy": 0.0,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "false_positive_rate": null,
+          "false_negative_rate": 1.0,
+          "indeterminate": 0
+        },
+        "[PII_LEAK]": {
+          "n": 8,
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 8,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 0,
+              "allowed": 8
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 0
+            }
+          },
+          "accuracy": 0.0,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "false_positive_rate": null,
+          "false_negative_rate": 1.0,
+          "indeterminate": 0
+        },
+        "[SAFE]": {
+          "n": 8,
+          "tp": 0,
+          "fp": 0,
+          "tn": 8,
+          "fn": 0,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 0,
+              "allowed": 0
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 8
+            }
+          },
+          "accuracy": 1.0,
+          "precision": null,
+          "recall": null,
+          "f1": null,
+          "false_positive_rate": 0.0,
+          "false_negative_rate": null,
+          "indeterminate": 0
+        }
+      },
+      "unseen_source_families": {
+        "n": 0,
+        "tp": 0,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0,
+        "confusion_matrix": {
+          "actual_threat": {
+            "blocked": 0,
+            "allowed": 0
+          },
+          "actual_benign": {
+            "blocked": 0,
+            "allowed": 0
+          }
+        },
+        "accuracy": null,
+        "precision": null,
+        "recall": null,
+        "f1": null,
+        "false_positive_rate": null,
+        "false_negative_rate": null,
+        "indeterminate": 0
+      }
+    },
+    "tier1": {
+      "overall": {
+        "n": 40,
+        "tp": 0,
+        "fp": 0,
+        "tn": 8,
+        "fn": 32,
+        "confusion_matrix": {
+          "actual_threat": {
+            "blocked": 0,
+            "allowed": 32
+          },
+          "actual_benign": {
+            "blocked": 0,
+            "allowed": 8
+          }
+        },
+        "accuracy": 0.2,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0,
+        "false_positive_rate": 0.0,
+        "false_negative_rate": 1.0,
+        "indeterminate": 0
+      },
+      "by_category": {
+        "[INJECTION_DIRECT]": {
+          "n": 8,
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 8,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 0,
+              "allowed": 8
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 0
+            }
+          },
+          "accuracy": 0.0,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "false_positive_rate": null,
+          "false_negative_rate": 1.0,
+          "indeterminate": 0
+        },
+        "[INJECTION_INDIRECT]": {
+          "n": 8,
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 8,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 0,
+              "allowed": 8
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 0
+            }
+          },
+          "accuracy": 0.0,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "false_positive_rate": null,
+          "false_negative_rate": 1.0,
+          "indeterminate": 0
+        },
+        "[MALICIOUS_TOOL_CALL]": {
+          "n": 8,
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 8,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 0,
+              "allowed": 8
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 0
+            }
+          },
+          "accuracy": 0.0,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "false_positive_rate": null,
+          "false_negative_rate": 1.0,
+          "indeterminate": 0
+        },
+        "[PII_LEAK]": {
+          "n": 8,
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 8,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 0,
+              "allowed": 8
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 0
+            }
+          },
+          "accuracy": 0.0,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "false_positive_rate": null,
+          "false_negative_rate": 1.0,
+          "indeterminate": 0
+        },
+        "[SAFE]": {
+          "n": 8,
+          "tp": 0,
+          "fp": 0,
+          "tn": 8,
+          "fn": 0,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 0,
+              "allowed": 0
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 8
+            }
+          },
+          "accuracy": 1.0,
+          "precision": null,
+          "recall": null,
+          "f1": null,
+          "false_positive_rate": 0.0,
+          "false_negative_rate": null,
+          "indeterminate": 0
+        }
+      },
+      "unseen_source_families": {
+        "n": 0,
+        "tp": 0,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0,
+        "confusion_matrix": {
+          "actual_threat": {
+            "blocked": 0,
+            "allowed": 0
+          },
+          "actual_benign": {
+            "blocked": 0,
+            "allowed": 0
+          }
+        },
+        "accuracy": null,
+        "precision": null,
+        "recall": null,
+        "f1": null,
+        "false_positive_rate": null,
+        "false_negative_rate": null,
+        "indeterminate": 0
+      }
+    },
+    "combined": {
+      "overall": {
+        "n": 40,
+        "tp": 0,
+        "fp": 0,
+        "tn": 8,
+        "fn": 32,
+        "confusion_matrix": {
+          "actual_threat": {
+            "blocked": 0,
+            "allowed": 32
+          },
+          "actual_benign": {
+            "blocked": 0,
+            "allowed": 8
+          }
+        },
+        "accuracy": 0.2,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0,
+        "false_positive_rate": 0.0,
+        "false_negative_rate": 1.0,
+        "indeterminate": 0
+      },
+      "by_category": {
+        "[INJECTION_DIRECT]": {
+          "n": 8,
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 8,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 0,
+              "allowed": 8
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 0
+            }
+          },
+          "accuracy": 0.0,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "false_positive_rate": null,
+          "false_negative_rate": 1.0,
+          "indeterminate": 0
+        },
+        "[INJECTION_INDIRECT]": {
+          "n": 8,
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 8,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 0,
+              "allowed": 8
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 0
+            }
+          },
+          "accuracy": 0.0,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "false_positive_rate": null,
+          "false_negative_rate": 1.0,
+          "indeterminate": 0
+        },
+        "[MALICIOUS_TOOL_CALL]": {
+          "n": 8,
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 8,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 0,
+              "allowed": 8
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 0
+            }
+          },
+          "accuracy": 0.0,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "false_positive_rate": null,
+          "false_negative_rate": 1.0,
+          "indeterminate": 0
+        },
+        "[PII_LEAK]": {
+          "n": 8,
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 8,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 0,
+              "allowed": 8
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 0
+            }
+          },
+          "accuracy": 0.0,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "false_positive_rate": null,
+          "false_negative_rate": 1.0,
+          "indeterminate": 0
+        },
+        "[SAFE]": {
+          "n": 8,
+          "tp": 0,
+          "fp": 0,
+          "tn": 8,
+          "fn": 0,
+          "confusion_matrix": {
+            "actual_threat": {
+              "blocked": 0,
+              "allowed": 0
+            },
+            "actual_benign": {
+              "blocked": 0,
+              "allowed": 8
+            }
+          },
+          "accuracy": 1.0,
+          "precision": null,
+          "recall": null,
+          "f1": null,
+          "false_positive_rate": 0.0,
+          "false_negative_rate": null,
+          "indeterminate": 0
+        }
+      },
+      "unseen_source_families": {
+        "n": 0,
+        "tp": 0,
+        "fp": 0,
+        "tn": 0,
+        "fn": 0,
+        "confusion_matrix": {
+          "actual_threat": {
+            "blocked": 0,
+            "allowed": 0
+          },
+          "actual_benign": {
+            "blocked": 0,
+            "allowed": 0
+          }
+        },
+        "accuracy": null,
+        "precision": null,
+        "recall": null,
+        "f1": null,
+        "false_positive_rate": null,
+        "false_negative_rate": null,
+        "indeterminate": 0
+      }
+    }
+  }
+}

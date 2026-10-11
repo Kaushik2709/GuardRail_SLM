@@ -1,3 +1,5 @@
+> Historical design/integration notes. Performance, accuracy, AWQ/vLLM, tracing and resume claims below are targets or unverified statements. Use [README](README.md) and [validation report](SECURITY_VALIDATION_REPORT.md) for current behavior. Enforce tool decisions with `result.permits("tool")`; classifier failures default to denial.
+
 # 🛡️ GuardRail-Zero: AI Agent Integration Architecture Guide
 
 This guide details how developers can integrate **GuardRail-Zero** as a sub-15ms self-hosted firewall and Model Context Protocol (MCP) zero-trust gateway into their own custom AI agents, frameworks, and agent hosts.

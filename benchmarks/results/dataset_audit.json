@@ -1,0 +1,76 @@
+{
+  "files": {
+    "data/processed/guardrail_train.jsonl": {
+      "rows": 25500,
+      "sha256": "586b4fe7057e12dc14323e8381c4b770b5c2b844284a16ce62cc3562aaeda71e",
+      "normalized_duplicate_rows": 23,
+      "categories": {
+        "[SAFE]": 12330,
+        "[MALICIOUS_TOOL_CALL]": 3421,
+        "[PII_LEAK]": 3842,
+        "[INJECTION_INDIRECT]": 3373,
+        "[INJECTION_DIRECT]": 2534
+      },
+      "source_families": {
+        "yahma/alpaca-cleaned": 12330,
+        "synthetic/python_tool_poisoning": 586,
+        "ai4privacy/pii-masking-300k": 3842,
+        "synthetic/rag": 3373,
+        "synthetic/sql_tool_poisoning": 1417,
+        "deepset/prompt-injections": 291,
+        "synthetic/bash_tool_poisoning": 1418,
+        "TrustAIRLab/jailbreak_2023_12_25": 1888,
+        "walledai/JailbreakBench": 159,
+        "TrustAIRLab/jailbreak_2023_05_07": 127,
+        "rubend18/ChatGPT-Jailbreak-Prompts": 69
+      }
+    },
+    "data/processed/guardrail_test.jsonl": {
+      "rows": 4500,
+      "sha256": "85dd90a6ad507b8bad031d9c8c4618ed51397e19fd815a42cf995e9a962f087e",
+      "normalized_duplicate_rows": 2,
+      "categories": {
+        "[SAFE]": 2170,
+        "[PII_LEAK]": 658,
+        "[INJECTION_INDIRECT]": 627,
+        "[INJECTION_DIRECT]": 466,
+        "[MALICIOUS_TOOL_CALL]": 579
+      },
+      "source_families": {
+        "yahma/alpaca-cleaned": 2170,
+        "ai4privacy/pii-masking-300k": 658,
+        "synthetic/rag": 627,
+        "TrustAIRLab/jailbreak_2023_12_25": 355,
+        "synthetic/bash_tool_poisoning": 232,
+        "synthetic/sql_tool_poisoning": 233,
+        "synthetic/python_tool_poisoning": 114,
+        "deepset/prompt-injections": 46,
+        "rubend18/ChatGPT-Jailbreak-Prompts": 13,
+        "walledai/JailbreakBench": 29,
+        "TrustAIRLab/jailbreak_2023_05_07": 23
+      }
+    }
+  },
+  "overlaps": [
+    {
+      "files": [
+        "data/processed/guardrail_train.jsonl",
+        "data/processed/guardrail_test.jsonl"
+      ],
+      "normalized_texts": 5,
+      "shared_source_families": [
+        "TrustAIRLab/jailbreak_2023_05_07",
+        "TrustAIRLab/jailbreak_2023_12_25",
+        "ai4privacy/pii-masking-300k",
+        "deepset/prompt-injections",
+        "rubend18/ChatGPT-Jailbreak-Prompts",
+        "synthetic/bash_tool_poisoning",
+        "synthetic/python_tool_poisoning",
+        "synthetic/rag",
+        "synthetic/sql_tool_poisoning",
+        "walledai/JailbreakBench",
+        "yahma/alpaca-cleaned"
+      ]
+    }
+  ]
+}

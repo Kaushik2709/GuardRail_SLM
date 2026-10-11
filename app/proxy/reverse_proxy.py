@@ -5,6 +5,7 @@ and forwards clean traffic to the upstream LLM provider.
 """
 
 import json
+from collections import defaultdict
 from fastapi import APIRouter, Request, HTTPException, status
 from fastapi.responses import JSONResponse, StreamingResponse
 import httpx
@@ -23,7 +24,7 @@ egress_scanner = EgressScanner()
 async def chat_completions(request: Request):
     """
     OpenAI-compatible chat completions proxy endpoint.
-    Performs sub-15ms pre-flight security evaluation before forwarding to upstream LLM.
+    Performs pre-flight security evaluation before forwarding to upstream LLM.
     """
     try:
         body = await request.json()
@@ -33,7 +34,30 @@ async def chat_completions(request: Request):
             detail="Invalid JSON payload"
         )
 
-    messages = body.get("messages", [])
+    if not isinstance(body, dict) or not isinstance(body.get("messages"), list):
+        raise HTTPException(status_code=400, detail="messages must be a list")
+    messages = body["messages"]
+    if any(not isinstance(m, dict) for m in messages):
+        raise HTTPException(status_code=400, detail="messages must contain objects")
+    for message in messages:
+        content = message.get("content")
+        if content is not None and not isinstance(content, (str, list)):
+            raise HTTPException(status_code=400, detail="Unsupported message content")
+        if isinstance(content, list) and any(
+            not isinstance(part, dict) or part.get("type") != "text" or not isinstance(part.get("text"), str)
+            for part in content
+        ):
+            raise HTTPException(status_code=400, detail="Only text content blocks are supported")
+        calls = message.get("tool_calls", [])
+        if not isinstance(calls, list):
+            raise HTTPException(status_code=400, detail="tool_calls must be a list")
+        for call in calls:
+            if not isinstance(call, dict) or not isinstance(call.get("function"), dict):
+                raise HTTPException(status_code=400, detail="Unsupported tool call")
+            if any(not isinstance(call["function"].get(field, ""), str) for field in ("name", "arguments")):
+                raise HTTPException(status_code=400, detail="Tool fields must be strings")
+        if "function_call" in message:
+            raise HTTPException(status_code=400, detail="Legacy function_call is unsupported; use tool_calls")
     stream = body.get("stream", False)
     client_ip = request.client.host if request.client else "unknown"
 
@@ -49,13 +73,14 @@ async def chat_completions(request: Request):
     )
 
     # 3. Block malicious requests immediately
-    if not inspection.is_safe:
+    if not inspection.permits("proxy"):
         return JSONResponse(
             status_code=status.HTTP_403_FORBIDDEN,
             content={
                 "error": {
                     "message": "Request blocked by GuardRail-Zero security policy.",
                     "type": "guardrail_security_violation",
+                    "classification": inspection.classification.value,
                     "threat_type": inspection.threat_type,
                     "confidence": inspection.confidence,
                     "tier": inspection.tier,
@@ -80,15 +105,34 @@ async def chat_completions(request: Request):
                         json=body,
                         headers=headers
                     ) as response:
-                        async for chunk in response.aiter_text():
-                            # Egress Scan
-                            is_safe, leak_reason = egress_scanner.scan_chunk(chunk)
-                            if not is_safe:
-                                yield f"data: {json.dumps({'error': leak_reason})}\n\n"
-                                break
-                            yield chunk
+                        response.raise_for_status()
+                        # Buffer until complete to detect secrets split across SSE deltas.
+                        chunks = [chunk async for chunk in response.aiter_text()]
+                        joined = "".join(chunks)
+                        decoded = []
+                        content_streams = defaultdict(list)
+                        tool_streams = defaultdict(list)
+                        for line in joined.splitlines():
+                            if line.startswith("data:") and line[5:].strip() != "[DONE]":
+                                event = json.loads(line[5:])
+                                for choice in event.get("choices", []):
+                                    delta = choice.get("delta", {})
+                                    decoded.append(json.dumps(delta, ensure_ascii=False))
+                                    content = delta.get("content")
+                                    if isinstance(content, str):
+                                        content_streams[choice.get("index", 0)].append(content)
+                                    for call in delta.get("tool_calls", []):
+                                        args = call.get("function", {}).get("arguments", "")
+                                        if isinstance(args, str):
+                                            tool_streams[(choice.get("index", 0), call.get("index", 0))].append(args)
+                        assembled = ["".join(parts) for parts in (*content_streams.values(), *tool_streams.values())]
+                        is_safe, leak_reason = egress_scanner.scan_chunk(joined + "".join(decoded + assembled))
+                        if not is_safe:
+                            yield f"data: {json.dumps({'error': leak_reason})}\n\n"
+                        else:
+                            yield joined
                 except Exception as e:
-                    yield f"data: {json.dumps({'error': f'Upstream LLM connection error: {str(e)}'})}\n\n"
+                    yield f"data: {json.dumps({'error': 'Upstream response unavailable or invalid'})}\n\n"
 
         return StreamingResponse(stream_generator(), media_type="text/event-stream")
 
@@ -104,7 +148,7 @@ async def chat_completions(request: Request):
             
             # Egress scan of full response
             choices = data.get("choices", [])
-            full_text = " ".join(c.get("message", {}).get("content", "") for c in choices)
+            full_text = json.dumps(choices, ensure_ascii=False)
             is_safe, leak_reason = egress_scanner.scan_chunk(full_text)
             if not is_safe:
                 return JSONResponse(
@@ -113,25 +157,6 @@ async def chat_completions(request: Request):
                 )
 
             return JSONResponse(status_code=resp.status_code, content=data)
-        except Exception as e:
-            # If upstream is offline, return simulated mock success response for demo / test
-            return JSONResponse(
-                status_code=status.HTTP_200_OK,
-                content={
-                    "id": "chatcmpl-guardrail-mock",
-                    "object": "chat.completion",
-                    "model": body.get("model", "qwen2.5-0.5b"),
-                    "choices": [{
-                        "index": 0,
-                        "message": {
-                            "role": "assistant",
-                            "content": f"[GuardRail-Zero Verified Safe] Processed request (inspection latency: {inspection.latency_ms:.2f}ms)."
-                        },
-                        "finish_reason": "stop"
-                    }],
-                    "guardrail_status": {
-                        "verdict": "SAFE",
-                        "latency_ms": round(inspection.latency_ms, 2)
-                    }
-                }
-            )
+        except Exception:
+            return JSONResponse(status_code=502, content={"error": {
+                "type": "upstream_unavailable", "message": "Upstream response unavailable or invalid."}})

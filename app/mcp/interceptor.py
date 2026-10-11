@@ -12,7 +12,27 @@ from typing import Any, Callable, Dict, Optional, Set
 import mcp.types as mt
 from fastmcp.server.middleware.middleware import Middleware, MiddlewareContext, CallNext
 from fastmcp.tools.base import ToolResult
-from app.mcp.tools import guardrail_verify_tool_call, guardrail_redact_pii
+from app.mcp.tools import guardrail_verify_tool_call, guardrail_redact_pii, cascade
+
+
+async def inspect_output(value):
+    """Inspect and redact every textual leaf, including nested structured results."""
+    if isinstance(value, str):
+        text = guardrail_redact_pii(value)["redacted_text"]
+        result = await cascade.inspect_text(text)
+        if not result.permits("tool"):
+            raise ValueError("Tool output blocked by GuardRail-Zero")
+        return text
+    if isinstance(value, dict):
+        return {await inspect_output(k) if isinstance(k, str) else k: await inspect_output(v)
+                for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [await inspect_output(v) for v in value]
+    if hasattr(value, "model_dump"):
+        return await inspect_output(value.model_dump())
+    if value is None or isinstance(value, (int, float, bool)):
+        return value
+    raise ValueError("Unsupported tool output type")
 
 logger = logging.getLogger("guardrail.mcp.interceptor")
 
@@ -31,9 +51,10 @@ class MCPInterceptor(Middleware):
         "guardrail_redact_pii"
     }
 
-    def __init__(self, sanitize_outputs: bool = True):
+    def __init__(self, sanitize_outputs: bool = True, exempt_tools: Optional[Set[str]] = None):
         super().__init__()
         self.sanitize_outputs = sanitize_outputs
+        self.exempt_tools = set(exempt_tools or ())
 
     async def on_call_tool(
         self,
@@ -46,8 +67,8 @@ class MCPInterceptor(Middleware):
         tool_name = context.message.name
         arguments = context.message.arguments or {}
 
-        # Skip self-auditing guardrail tools to prevent recursive inspection
-        if tool_name in self.EXEMPT_TOOLS:
+        # Only explicitly trusted tools owned by this server may bypass inspection
+        if tool_name in self.exempt_tools:
             return await call_next(context)
 
         # 1. Pre-flight parameter verification
@@ -79,24 +100,16 @@ class MCPInterceptor(Middleware):
         # 2. Execute downstream tool
         result: ToolResult = await call_next(context)
 
-        # 3. Post-execution output sanitization (PII / Secrets redaction)
+        # Inspect text blocks and nested structured content before releasing them.
         if self.sanitize_outputs:
-            if result.content:
-                sanitized_blocks = []
-                for block in result.content:
-                    if hasattr(block, "text") and isinstance(block.text, str):
-                        redaction = guardrail_redact_pii(block.text)
-                        if redaction.get("secrets_found_count", 0) > 0:
-                            block.text = redaction.get("redacted_text", block.text)
-                    sanitized_blocks.append(block)
-                result.content = sanitized_blocks
-
-            if result.structured_content and isinstance(result.structured_content, dict):
-                for k, v in list(result.structured_content.items()):
-                    if isinstance(v, str):
-                        red = guardrail_redact_pii(v)
-                        if red.get("secrets_found_count", 0) > 0:
-                            result.structured_content[k] = red["redacted_text"]
+            try:
+                for block in result.content or []:
+                    if getattr(block, "type", None) != "text":
+                        raise ValueError("Unsupported non-text tool output")
+                    block.text = await inspect_output(block.text)
+                result.structured_content = await inspect_output(result.structured_content)
+            except ValueError:
+                return ToolResult(content="Tool output blocked by GuardRail-Zero", is_error=True)
 
         return result
 
@@ -128,10 +141,9 @@ class MCPInterceptor(Middleware):
         # Safe to execute downstream tool
         execution_result = await downstream_executor(tool_name, arguments)
 
-        # Sanitize result if it contains text
-        if self.sanitize_outputs and isinstance(execution_result, str):
-            redaction = guardrail_redact_pii(execution_result)
-            if redaction.get("secrets_found_count", 0) > 0:
-                execution_result = redaction.get("redacted_text", execution_result)
-
+        if self.sanitize_outputs:
+            try:
+                execution_result = await inspect_output(execution_result)
+            except ValueError:
+                return {"isError": True, "content": [{"type": "text", "text": "Tool output blocked by GuardRail-Zero"}]}
         return execution_result
